@@ -24,7 +24,7 @@ echo "[+] Installing dependencies..."
 
 if command -v apt >/dev/null 2>&1; then
   sudo apt update
-  sudo apt install -y mpv git python3-venv
+  sudo apt install -y mpv git python3
 elif command -v dnf >/dev/null 2>&1; then
   sudo dnf install -y mpv git python3
 elif command -v pacman >/dev/null 2>&1; then
@@ -104,12 +104,35 @@ chmod +x "$WRAPPER_DST"
 echo "[+] Installed command: $WRAPPER_DST"
 echo
 
-# ---------- PATH hint ----------
+# ---------- PATH setup ----------
 if ! echo "$PATH" | grep -q "$BIN_DIR"; then
-  echo "[!] $BIN_DIR is not in PATH"
-  echo "    Add this line to your shell config:"
-  echo
-  echo "    export PATH=\"\$HOME/.local/bin:\$PATH\""
+  echo "[+] Adding $BIN_DIR to PATH..."
+  
+  # Detect shell config file
+  SHELL_CONFIG=""
+  if [[ -n "${BASH_VERSION:-}" ]] && [[ -f "$HOME/.bashrc" ]]; then
+    SHELL_CONFIG="$HOME/.bashrc"
+  elif [[ -n "${ZSH_VERSION:-}" ]] && [[ -f "$HOME/.zshrc" ]]; then
+    SHELL_CONFIG="$HOME/.zshrc"
+  elif [[ -f "$HOME/.profile" ]]; then
+    SHELL_CONFIG="$HOME/.profile"
+  fi
+  
+  if [[ -n "$SHELL_CONFIG" ]]; then
+    PATH_LINE='export PATH="$HOME/.local/bin:$PATH"'
+    if ! grep -qF "$PATH_LINE" "$SHELL_CONFIG"; then
+      echo "" >> "$SHELL_CONFIG"
+      echo "# Added by ytm setup" >> "$SHELL_CONFIG"
+      echo "$PATH_LINE" >> "$SHELL_CONFIG"
+      echo "[+] PATH added to $SHELL_CONFIG"
+      echo "[!] Run: source $SHELL_CONFIG"
+    else
+      echo "[+] PATH already configured in $SHELL_CONFIG"
+    fi
+  else
+    echo "[!] Could not detect shell config. Add manually:"
+    echo "    export PATH=\"\$HOME/.local/bin:\$PATH\""
+  fi
   echo
 fi
 
