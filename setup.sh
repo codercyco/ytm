@@ -84,6 +84,35 @@ rm -rf "$TMP_DIR"
 echo "[+] youtube-upnext installed"
 echo
 
+# ---------- mpv config ----------
+MPV_CONF="$HOME/.config/mpv/mpv.conf"
+
+if [[ ! -f "$MPV_CONF" ]]; then
+  echo "[+] Creating mpv config..."
+  
+  read -rp "Buffer size in MiB (leave empty for default '5'): " BUFFER_SIZE
+  BUFFER_SIZE="${BUFFER_SIZE:-5}"
+  
+  if ! [[ "$BUFFER_SIZE" =~ ^[0-9]+$ ]]; then
+    echo "❌ Invalid buffer size - must be a number"
+    exit 1
+  fi
+  
+  cat > "$MPV_CONF" << EOF
+# Enable RAM cache
+cache=yes
+
+# Max buffer size for demuxer
+demuxer-max-bytes=${BUFFER_SIZE}MiB
+
+EOF
+  echo "[+] mpv config created with ${BUFFER_SIZE}MiB buffer at $MPV_CONF"
+else
+  echo "[+] mpv config already exists, skipping"
+fi
+
+echo
+
 # ---------- Install wrapper ----------
 echo "[+] Installing wrapper command..."
 
