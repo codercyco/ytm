@@ -26,4 +26,4 @@ if (( now - last_update > DAY_SECONDS )); then
 fi
 
 # Launch mpv (audio-only)
-exec mpv --no-video --ytdl-format=bestaudio "$@"
+exec mpv --profile=music "$@"

@@ -99,11 +99,12 @@ if [[ ! -f "$MPV_CONF" ]]; then
   fi
   
   cat > "$MPV_CONF" << EOF
-# Enable RAM cache
 cache=yes
 
-# Max buffer size for demuxer
+[music]
+no-video
 demuxer-max-bytes=${BUFFER_SIZE}MiB
+ytdl-format=bestaudio
 
 EOF
   echo "[+] mpv config created with ${BUFFER_SIZE}MiB buffer at $MPV_CONF"
@@ -182,12 +183,9 @@ else
 fi
 
 echo
-echo "✅ Setup complete! Run '$CMD_NAME <YouTube-URL>' to play audio."
-
-echo
 echo "✅ Setup completed!"
 echo "▶ Usage:"
-echo "   $CMD_NAME \"https://music.youtube.com/watch?v=XXXX\""
+echo "   $CMD_NAME \"https://youtube.com/watch?v=XXXX\""
 echo
 echo "▶ Uninstall:"
 echo "   rm -rf \"$VENV_DIR\" \"$WRAPPER_DST\""
