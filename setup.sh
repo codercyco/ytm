@@ -24,16 +24,16 @@ echo "[+] Installing dependencies..."
 
 if command -v apt >/dev/null 2>&1; then
   sudo apt update
-  sudo apt install -y mpv git python3
+  sudo apt install -y mpv git python3 python3-virtualenv
 elif command -v dnf >/dev/null 2>&1; then
-  sudo dnf install -y mpv git python3
+  sudo dnf install -y mpv git python3 python3-virtualenv
 elif command -v pacman >/dev/null 2>&1; then
-  sudo pacman -S --noconfirm mpv git python
+  sudo pacman -S --noconfirm mpv git python python-virtualenv
 else
   echo "⚠️  Could not detect package manager. Please install manually:"
   echo "    - mpv"
   echo "    - git"
-  echo "    - python3-venv (or python3)"
+  echo "    - python3-virtualenv"
   read -rp "Press Enter after installing dependencies..."
 fi
 
@@ -60,7 +60,7 @@ echo "[+] Setting up yt-dlp venv..."
 mkdir -p "$HOME/.config/mpv"
 
 if [[ ! -d "$VENV_DIR" ]]; then
-  python3 -m venv "$VENV_DIR"
+  virtualenv "$VENV_DIR"
 fi
 
 "$VENV_DIR/bin/pip" install --upgrade pip yt-dlp
