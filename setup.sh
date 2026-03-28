@@ -149,11 +149,13 @@ if ! echo "$PATH" | grep -q "$BIN_DIR"; then
   fi
   
   if [[ -n "$SHELL_CONFIG" ]]; then
-    PATH_LINE='export PATH="$PATH:$HOME/.local/bin"'
-    if ! grep -qF "$PATH_LINE" "$SHELL_CONFIG"; then
+    if ! grep -qF ':$HOME/.local/bin:' "$SHELL_CONFIG"; then
       echo "" >> "$SHELL_CONFIG"
       echo "# Added by ytm setup" >> "$SHELL_CONFIG"
-      echo "$PATH_LINE" >> "$SHELL_CONFIG"
+      echo 'case ":$PATH:" in' >> "$SHELL_CONFIG"
+      echo '  *":$HOME/.local/bin:"*) ;;' >> "$SHELL_CONFIG"
+      echo '  *) export PATH="$HOME/.local/bin:$PATH" ;;' >> "$SHELL_CONFIG"
+      echo 'esac' >> "$SHELL_CONFIG"
       echo "[+] PATH added to $SHELL_CONFIG"
       echo "[!] Run: source $SHELL_CONFIG"
     else
@@ -161,7 +163,10 @@ if ! echo "$PATH" | grep -q "$BIN_DIR"; then
     fi
   else
     echo "[!] Could not detect shell config. Add manually:"
-    echo "    export PATH=\"\$PATH:\$HOME/.local/bin\""
+    echo '    case ":$PATH:" in'
+    echo '      *":$HOME/.local/bin:"*) ;;'
+    echo '      *) export PATH="$HOME/.local/bin:$PATH" ;;'
+    echo '    esac'
   fi
   echo
 fi
